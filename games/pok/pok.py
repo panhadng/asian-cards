@@ -55,7 +55,7 @@ def calculate_score(hand):
     ) == 'ace' else int(card.value) for card in hand) % 10
 
     # Check for bomb condition
-    is_bomb = len(hand) == 2 and score in bomber
+    jackpot = len(hand) == 2 and score in bomber
 
     # Check for three ongs condition
     is_three_ongs = len(hand) == 3 and all(
@@ -86,7 +86,7 @@ def calculate_score(hand):
     result = {
         "score": score,
         "multi": multi,
-        "is_bomb": is_bomb,
+        "jackpot": jackpot,
         "is_three_ongs": is_three_ongs,
         "is_three_of_a_kind": is_three_of_a_kind
     }
@@ -100,7 +100,7 @@ def compare_hands(hand1, hand2):
     score_info2 = calculate_score(hand2)
 
     # Compare based on the ranking criteria
-    if score_info1['is_bomb'] and score_info2['is_bomb']:
+    if score_info1['jackpot'] and score_info2['jackpot']:
         # If both are bombs, compare scores
         if score_info1['score'] > score_info2['score']:
             return "Hand 1 wins"
@@ -109,9 +109,9 @@ def compare_hands(hand1, hand2):
         else:
             return "It's a tie"
 
-    if score_info1['is_bomb'] and not score_info2['is_bomb']:
+    if score_info1['jackpot'] and not score_info2['jackpot']:
         return "Hand 1 wins"
-    elif score_info2['is_bomb'] and not score_info1['is_bomb']:
+    elif score_info2['jackpot'] and not score_info1['jackpot']:
         return "Hand 2 wins"
     elif score_info1['multi'] == 5 and score_info2['multi'] != 5:
         return "Hand 1 wins"
