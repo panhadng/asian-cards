@@ -8,7 +8,13 @@ class Player:
         self.can_draw = True
 
     def draw_card(self, card):
+        # Check if the player can draw
+        if not self.can_draw:
+            raise ValueError(f"{self.name} cannot draw more cards.")
         self.hand.append(card)
+
+    def __str__(self):
+        return f"{self.name}'s hand"
 
 
 class Pok:
@@ -83,6 +89,7 @@ def calculate_score(hand):
         elif 2 in suits.values() and len(hand) == 2:
             multi = 2
 
+    # Return the result
     result = {
         "score": score,
         "multi": multi,
@@ -90,8 +97,6 @@ def calculate_score(hand):
         "is_three_ongs": is_three_ongs,
         "is_three_of_a_kind": is_three_of_a_kind
     }
-
-    # Return the result
     return result
 
 
