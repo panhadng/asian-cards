@@ -13,8 +13,14 @@ class Player:
             raise ValueError(f"{self.name} cannot draw more cards.")
         self.hand.append(card)
 
+    def presentation(self):
+        return f"{self.name}'s hand: {self.hand}"
+
     def __str__(self):
-        return f"{self.name}'s hand"
+        return self.presentation()
+
+    def __repr__(self):
+        return self.presentation()
 
 
 class Pok:

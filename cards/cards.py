@@ -26,8 +26,14 @@ class Deck:
         else:
             return [Card(card) for card in cards_data['cards']]
 
-    def __str__(self):
+    def presentation(self):
         return f"Deck is shuffled with ID of {self.deck_id} and {self.deck['remaining']} cards remaining."
+
+    def __str__(self):
+        return self.presentation()
+
+    def __repr__(self):
+        return self.presentation()
 
 
 class Card:
@@ -38,5 +44,11 @@ class Card:
         self.value = card['value']
         self.suit = card['suit']
 
-    def __str__(self):
+    def presentation(self):
         return f"{self.value} of {self.suit}"
+
+    def __str__(self):
+        return self.presentation()
+
+    def __repr__(self):
+        return self.presentation()
