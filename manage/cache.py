@@ -10,6 +10,3 @@ def delete_pycaches():
             print(f"Deleting {pycache_path}")
             # Remove the __pycache__ directory and its contents
             shutil.rmtree(pycache_path)
-
-
-delete_pycaches()

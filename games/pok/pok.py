@@ -38,23 +38,26 @@ class Pok:
 
         # Deal 2 cards to the dealer
         self.dealer.hand = self.deck.draw_cards(2)
+        return {"Players": self.players, "Dealer": self.dealer.hand}
 
     def draw_card(self, player_name):
+        # Check if the player is in the game
         if player_name not in self.players and player_name != 'Dealer':
             raise ValueError(f"{player_name} not found.")
 
+        # Check if the dealer can draw
         if player_name == 'Dealer':
             if self.dealer.can_draw:
                 card = self.deck.draw_cards(1)
                 self.dealer.hand.append(card)
         else:
+            # Check if the player can draw
             if self.players[player_name].can_draw:
                 card = self.deck.draw_cards(1)
                 self.players[player_name].hand.append(card)
 
-    def start(self):
-        self.deal_cards()
-        return {"Players": self.players, "Dealer": self.dealer.hand}
+        # Return the player's hand
+        return self.players[player_name].hand
 
 
 def calculate_score(hand):
