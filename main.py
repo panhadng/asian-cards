@@ -1,6 +1,7 @@
 import sys
 from manage.cache import delete_pycaches
-from games.pok.pok import Pok, calculate_score, compare_hands
+from games.pok.pok import Pok
+from games.pok.logic import calculate_score, compare_hands
 
 
 def display_hands(players, dealer):
@@ -43,21 +44,21 @@ def main():
                 # Compare player's hand with dealer's hand
                 result = compare_hands(player.hand, game.dealer.hand)
                 print(f"Result for {player_name} vs Dealer: {result}\n")
-                # {{ edit_1 }}: End the player's turn after comparison
                 continue  # Skip to the next player
 
-        # Allow players to draw cards if no jackpot hands
+        # Allow non-jackpot players to draw cards
         for player_name, player in game.players.items():
             # Ensure we recalculate for each player
             player_score_info = calculate_score(player.hand)
-            if player_score_info['score'] < 4:
-                print(f"{player_name}, you must draw a card.")
-                game.draw_card(player_name)
-            else:
-                choice = input(
-                    f"{player_name}, do you want to draw a card? (y/n): ")
-                if choice.lower() == 'y':
+            if player_score_info['score'] not in [8, 9]:
+                if player_score_info['score'] < 4:
+                    print(f"{player_name}, you must draw a card.")
                     game.draw_card(player_name)
+                else:
+                    choice = input(
+                        f"{player_name}, do you want to draw a card? (y/n): ")
+                    if choice.lower() == 'y':
+                        game.draw_card(player_name)
 
         # Dealer's turn
         if dealer_score_info['score'] < 4:
