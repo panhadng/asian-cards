@@ -1,14 +1,45 @@
+from enum import IntEnum
+
+
+class HandRank(IntEnum):
+    NORMAL = 0
+    THREE_ONGS = 1
+    THREE_OF_A_KIND = 2
+    JACKPOT = 3
+
+
+class Result:
+    def __init__(self, winner, loser, is_tie, multi):
+        self.winner = winner
+        self.loser = loser
+        self.is_tie = is_tie
+        self.multi = multi
+
+    def presentation(self):
+        if self.is_tie:
+            return f"It is a tie game."
+        else:
+            self.multi = calculate_score(self.winner.hand)['multi']
+            return f"{self.winner.name} beats {self.loser.name} with a multiplier of {self.multi}."
+
+    def __str__(self):
+        return self.presentation()
+
+    def __repr__(self):
+        return self.presentation()
+
+
 def calculate_score(hand):
-    # Define the ongs and bomber
+    # Define the ongs and jackpots
     ongs = ['king', 'queen', 'jack']
-    bomber = [8, 9]
+    jackpots = [8, 9]
 
     # Calculate the score based on the rules provided
     score = sum(0 if card.value.lower() in ongs else 1 if card.value.lower(
     ) == 'ace' else int(card.value) for card in hand) % 10
 
-    # Check for bomb condition
-    is_bomb = len(hand) == 2 and score in bomber
+    # Check for jackpot condition
+    is_jackpot = len(hand) == 2 and score in jackpots
 
     # Check for three ongs condition
     is_three_ongs = len(hand) == 3 and all(
@@ -35,47 +66,48 @@ def calculate_score(hand):
             multi = 3
         elif 2 in suits.values() and len(hand) == 2:
             multi = 2
+        elif len(hand) == 2 and len(set([card.value for card in hand])) == 1:
+            multi = 2
+
+    # Determine hand rank
+    rank = HandRank.NORMAL
+    if is_jackpot:
+        rank = HandRank.JACKPOT
+    elif is_three_of_a_kind:
+        rank = HandRank.THREE_OF_A_KIND
+    elif is_three_ongs:
+        rank = HandRank.THREE_ONGS
 
     # Return the result
     result = {
         "score": score,
         "multi": multi,
-        "is_bomb": is_bomb,
+        "rank": rank,
+        "is_jackpot": is_jackpot,
         "is_three_ongs": is_three_ongs,
         "is_three_of_a_kind": is_three_of_a_kind
     }
     return result
 
 
-def compare_hands(hand1, hand2):
-    score_info1 = calculate_score(hand1)
-    score_info2 = calculate_score(hand2)
+def compare_hands(player_one, player_two):
+    score_one = calculate_score(player_one.hand)
+    score_two = calculate_score(player_two.hand)
+    result = Result(None, None, False, 1)
 
-    # Compare based on the ranking criteria
-    if score_info1['is_bomb'] and score_info2['is_bomb']:
-        # If both are bombs, compare scores
-        if score_info1['score'] > score_info2['score']:
-            return "Hand 1 wins"
-        elif score_info1['score'] < score_info2['score']:
-            return "Hand 2 wins"
+    # Compare ranks first
+    if score_one['rank'] != score_two['rank']:
+        if score_one['rank'] > score_two['rank']:
+            result.winner, result.loser = player_one, player_two
         else:
-            return "It's a tie"
+            result.winner, result.loser = player_two, player_one
+        return result
 
-    if score_info1['is_bomb'] and not score_info2['is_bomb']:
-        return "Hand 1 wins"
-    elif score_info2['is_bomb'] and not score_info1['is_bomb']:
-        return "Hand 2 wins"
-    elif score_info1['multi'] == 5 and score_info2['multi'] != 5:
-        return "Hand 1 wins"
-    elif score_info2['multi'] == 5 and score_info1['multi'] != 5:
-        return "Hand 2 wins"
-    elif score_info1['is_three_ongs'] and not score_info2['is_three_ongs']:
-        return "Hand 1 wins"
-    elif score_info2['is_three_ongs'] and not score_info1['is_three_ongs']:
-        return "Hand 2 wins"
-    elif score_info1['score'] > score_info2['score']:
-        return "Hand 1 wins"
-    elif score_info1['score'] < score_info2['score']:
-        return "Hand 2 wins"
+    # If same rank, compare scores
+    if score_one['score'] > score_two['score']:
+        result.winner, result.loser = player_one, player_two
+    elif score_one['score'] < score_two['score']:
+        result.winner, result.loser = player_two, player_one
     else:
-        return "It's a tie"
+        result.is_tie = True
+    return result

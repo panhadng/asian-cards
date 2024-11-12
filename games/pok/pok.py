@@ -14,7 +14,7 @@ class Player:
         self.hand.append(card)
 
     def presentation(self):
-        return f"{self.name}'s hand: {self.hand}"
+        return f"{self.name}'s hand: {self.hand}."
 
     def __str__(self):
         return self.presentation()
@@ -50,11 +50,10 @@ class Pok:
             if self.dealer.can_draw:
                 card = self.deck.draw_cards(1)
                 self.dealer.hand.append(card)
+            return self.dealer.hand  # Return the dealer's hand
         else:
             # Check if the player can draw
             if self.players[player_name].can_draw:
                 card = self.deck.draw_cards(1)
                 self.players[player_name].hand.append(card)
-
-        # Return the player's hand
-        return self.players[player_name].hand
+            return self.players[player_name].hand  # Return the player's hand
